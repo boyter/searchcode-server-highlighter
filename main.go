@@ -3,6 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/alecthomas/chroma/formatters"
+	"github.com/alecthomas/chroma/lexers"
+	"github.com/alecthomas/chroma/quick"
+	"github.com/alecthomas/chroma/styles"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
@@ -33,6 +37,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		fmt.Println("Error reading body", err.Error())
 		return
 	}
 
@@ -40,14 +45,42 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &result)
 
 	if err != nil {
+		fmt.Println("Error reading to json", err.Error())
 		return
 	}
 
+	lexer := lexers.Match("foo.go")
+	fmt.Println(lexer)
+	lexer = lexers.Get("go")
+	fmt.Println(lexer)
+
+	if lexer == nil {
+		lexer = lexers.Fallback
+	}
+
+	fmt.Println(lexers.Names(true))
+
+
+	style := styles.Get("swapoff")
+	if style == nil {
+		style = styles.Fallback
+	}
+	formatter := formatters.Get("html")
+	if formatter == nil {
+		formatter = formatters.Fallback
+	}
+
+	iterator, err := lexer.Tokenise(nil, result.Content)
+	formatter.Format(w, style, iterator)
+
+
 	fmt.Println(result)
+	quick.Highlight(os.Stdout, result.Content, "go", "html", "monokai")
 }
 
 
 type InputLanguage struct {
-	Name string
+	LanguageName string
+	FileName string
 	Content string
 }
