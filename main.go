@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/alecthomas/chroma/formatters"
+	"github.com/alecthomas/chroma/formatters/html"
 	"github.com/alecthomas/chroma/lexers"
-	"github.com/alecthomas/chroma/quick"
 	"github.com/alecthomas/chroma/styles"
 	"github.com/gorilla/mux"
 	"io/ioutil"
@@ -32,7 +32,7 @@ func main() {
 	errorLog.Fatal(err)
 }
 
-
+// https://github.com/alecthomas/chroma
 func Home(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
@@ -49,38 +49,41 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lexer := lexers.Match("foo.go")
-	fmt.Println(lexer)
-	lexer = lexers.Get("go")
-	fmt.Println(lexer)
+	lexer := lexers.Match(result.FileName)
 
 	if lexer == nil {
 		lexer = lexers.Fallback
 	}
 
-	fmt.Println(lexers.Names(true))
+	//fmt.Println(lexers.Names(true))
+	//fmt.Println(styles.Names())
 
-
-	style := styles.Get("swapoff")
+	style := styles.Get("monokai")
 	if style == nil {
 		style = styles.Fallback
 	}
+
 	formatter := formatters.Get("html")
 	if formatter == nil {
 		formatter = formatters.Fallback
 	}
 
 	iterator, err := lexer.Tokenise(nil, result.Content)
-	formatter.Format(w, style, iterator)
+	//formatter.Format(w, style, iterator)
 
+	// Get the styles
+	formatter2 := html.New(html.WithLineNumbers(), html.WithClasses())
+	formatter2.WriteCSS(w, style)
+	formatter2.Format(w, style, iterator)
 
-	fmt.Println(result)
-	quick.Highlight(os.Stdout, result.Content, "go", "html", "monokai")
+	//quick.Highlight(os.Stdout, result.Content, "go", "html", "monokai")
 }
 
 
 type InputLanguage struct {
 	LanguageName string
 	FileName string
+	Style string
 	Content string
+	WithLineNumbers bool
 }
