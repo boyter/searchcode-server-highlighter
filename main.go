@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/alecthomas/chroma/formatters"
@@ -71,19 +72,36 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	iterator, err := lexer.Tokenise(nil, result.Content)
 	//formatter.Format(w, style, iterator)
 
+
+	var cssBytes bytes.Buffer
+	var htmlBytes bytes.Buffer
+
 	// Get the styles
 	formatter2 := html.New(html.WithLineNumbers(), html.WithClasses())
-	formatter2.WriteCSS(w, style)
-	formatter2.Format(w, style, iterator)
+	formatter2.WriteCSS(&cssBytes, style)
+	formatter2.Format(&htmlBytes, style, iterator)
 
 	//quick.Highlight(os.Stdout, result.Content, "go", "html", "monokai")
+
+	output, _ := json.Marshal(OutputLanguage{
+		Css:  cssBytes.String(),
+		Html: htmlBytes.String(),
+	})
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Write(output)
 }
 
 
 type InputLanguage struct {
-	LanguageName string
-	FileName string
-	Style string
-	Content string
-	WithLineNumbers bool
+	LanguageName string `json:"languageName"`
+	FileName string `json:"fileName"`
+	Style string `json:"style"`
+	Content string `json:"content"`
+	WithLineNumbers bool `json:"withLineNumbers"`
+}
+
+type OutputLanguage struct {
+	Css string `json:"css"`
+	Html string `json:"html"`
 }
