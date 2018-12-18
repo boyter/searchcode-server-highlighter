@@ -134,8 +134,9 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	output, _ := json.Marshal(OutputLanguage{
-		Css:  cssBytes.String(),
-		Html: htmlBytes.String(),
+		Css:        cssBytes.String(),
+		Html:       htmlBytes.String(),
+		TimeMillis: (makeTimestampMilli() - startTime),
 	})
 
 	infoLog.Println("Processed in", (makeTimestampMilli() - startTime), "milliseconds", memUsage())
@@ -171,8 +172,9 @@ type InputLanguage struct {
 }
 
 type OutputLanguage struct {
-	Css  string `json:"css"`
-	Html string `json:"html"`
+	Css        string `json:"css"`
+	Html       string `json:"html"`
+	TimeMillis int64  `json:"timeMillis"`
 }
 
 type OutputError struct {
