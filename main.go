@@ -24,7 +24,9 @@ func main() {
 	addr := flag.String("addr", "127.0.0.1:8089", "HTTP network address")
 
 	router := mux.NewRouter()
-	router.Handle("/", http.HandlerFunc(Home)).Methods("POST")
+	router.Handle("/", http.HandlerFunc(Home)).Methods("GET")
+	router.Handle("/health-check/", http.HandlerFunc(HealthCheck)).Methods("GET")
+	router.Handle("/v1/highlight/", http.HandlerFunc(Highlight)).Methods("POST")
 
 	srv := &http.Server{
 		Addr:     *addr,
@@ -32,7 +34,9 @@ func main() {
 		Handler:  router,
 	}
 
+	infoLog.Println("Styles:", styles.Names())
 	infoLog.Println("Starting server on", *addr)
+
 	err := srv.ListenAndServe()
 	errorLog.Fatal(err)
 }
@@ -41,9 +45,23 @@ func main() {
 // fmt.Println(lexers.Names(true))
 // fmt.Println(styles.Names())
 
-// See below fod details
-// https://github.com/alecthomas/chroma
 func Home(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	_, _ = w.Write([]byte("{}"))
+}
+
+func HealthCheck(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	_, _ = w.Write([]byte("{}"))
+}
+
+// See below for details
+// https://github.com/alecthomas/chroma
+func Highlight(w http.ResponseWriter, r *http.Request) {
 	startTime := makeTimestampMilli()
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -80,6 +98,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 
 	lexer := lexers.Match(result.FileName)
 	if lexer == nil {
+		errorLog.Println("No lexer found for", result.FileName)
 		lexer = lexers.Fallback
 	}
 
