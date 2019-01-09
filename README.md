@@ -6,13 +6,14 @@ Build step to create smallest builds
 ```
 GOOS=windows GOARCH=amd64 go build -ldflags="-s -w"
 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w"
+GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w"
 ```
 
 Then apply upx over the resulting files
 
 ```
 upx searchcode-server-highlighter
-upx.exe searchcode-server-highlighter.exe
+upx searchcode-server-highlighter.exe
 ```
 
 The resulting build for each file should be ~3 MB
