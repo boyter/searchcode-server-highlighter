@@ -1,0 +1,12 @@
+language: go
+os:
+  - linux
+go:
+  - 1.11.x
+env:
+  - GOOS=windows GOARCH=amd64
+  - GOOS=linux GOARCH=amd64
+  - GOOS=darwin GOARCH=amd64
+matrix:
+  fast_finish: true
+
