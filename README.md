@@ -1,6 +1,8 @@
 A very simple Go HTTP based Syntax highlighter. Run it, then post some code to the default port and it will return 
 CSS + HTML syntax highlighted code.
 
+[![Build Status](https://travis-ci.org/boyter/searchcode-server-highlighter.svg?branch=master)](https://travis-ci.org/boyter/searchcode-server-highlighter)
+
 Build step to create smallest builds
 
 ```
