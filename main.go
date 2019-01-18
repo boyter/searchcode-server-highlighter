@@ -99,7 +99,12 @@ func Highlight(w http.ResponseWriter, r *http.Request) {
 	lexer := lexers.Match(result.FileName)
 	if lexer == nil {
 		errorLog.Println("No lexer found for", result.FileName)
-		lexer = lexers.Fallback
+		lexer = lexers.Analyse(result.Content)
+
+		if lexer == nil {
+			errorLog.Println("No lexer found for content check of", result.FileName)
+			lexer = lexers.Fallback
+		}
 	}
 
 	style := styles.Get(result.Style)
