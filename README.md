@@ -19,3 +19,36 @@ upx searchcode-server-highlighter.exe
 ```
 
 The resulting build for each file should be ~3 MB
+
+## Sample Usage
+
+Install [httpie](https://httpie.org/) and [jq](https://stedolan.github.io/jq/), then run the following snippet to generate a local HTML file.
+
+```shell
+FILE=$GOPATH/src/github.com/boyter/searchcode-server-highlighter/main.go
+LANG=go
+STYLE=tango
+
+# send up the file
+http POST localhost:8089/v1/highlight/ languageName=$LANG fileName=$(basename $FILE) style=$STYLE content=@$FILE > res
+
+# munch results
+CSS=$(cat res| jq --raw-output .css  | sed 's/\\n/\n/g')
+HTML=$(cat res| jq --raw-output .html | sed 's/\\n/\n/g')
+
+cat  << EOF > $(basename $FILE).html
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+$CSS
+</style>
+</head>
+<body>
+$HTML
+</body>
+</html>
+EOF
+
+echo "Done: $(basename $FILE).html"
+```
