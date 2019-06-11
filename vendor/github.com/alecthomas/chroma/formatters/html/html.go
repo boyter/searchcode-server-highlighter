@@ -5,6 +5,7 @@ import (
 	"html"
 	"io"
 	"sort"
+	"strconv" // searchcode.com specific import
 	"strings"
 
 	"github.com/alecthomas/chroma"
@@ -204,7 +205,10 @@ func (f *Formatter) writeHTML(w io.Writer, style *chroma.Style, tokens []*chroma
 		}
 
 		if f.lineNumbers && !wrapInTable {
-			fmt.Fprintf(w, "<span%s>%*d</span>", f.styleAttr(css, chroma.LineNumbers), lineDigits, line)
+			//fmt.Fprintf(w, "<span%s>%*d</span>", f.styleAttr(css, chroma.LineNumbers), lineDigits, line)
+			// The below is a searchcode.com specific change required to preserve backwards compatibility with the
+			// existing inline anchor tags. The original code is listed above.
+			fmt.Fprintf(w, "<span%s id=\"l-" + strconv.Itoa(line) + "\">%*d</span>", f.styleAttr(css, chroma.LineNumbers), lineDigits, line)
 		}
 
 		for _, token := range tokens {
