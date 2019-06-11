@@ -11,13 +11,6 @@ GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" && upx searchcode-server-highl
 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" && upx searchcode-server-highlighter && mv searchcode-server-highlighter searchcode-server-highlighter-x86_64-apple-darwin
 ```
 
-Then apply upx over the resulting files
-
-```
-upx searchcode-server-highlighter
-upx searchcode-server-highlighter.exe
-```
-
 The resulting build for each file should be ~3 MB
 
 ## Sample Usage
