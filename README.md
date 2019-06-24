@@ -2,6 +2,7 @@ A very simple Go HTTP based Syntax highlighter. Run it, then post some code to t
 CSS + HTML syntax highlighted code.
 
 [![Build Status](https://travis-ci.org/boyter/searchcode-server-highlighter.svg?branch=master)](https://travis-ci.org/boyter/searchcode-server-highlighter)
+[![Scc Count Badge](https://sloc.xyz/github/boyter/searchcode-server-highlighter/)](https://github.com/boyter/searchcode-server-highlighter/)
 
 Build step to create smallest builds
 
